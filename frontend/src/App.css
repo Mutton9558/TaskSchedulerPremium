@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+:root{
+  --background-dark: #080b08;
+  --text-dark: #f1f5f0;
+  --primary-dark: #b7c9b1;
+  --secondary-dark: #41555d;
+  --accent-dark: #7b85a3;
+}
+
+html, body {
+  margin: 0;
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+  font-family: "Roboto Mono", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  box-sizing: border-box;
+  z-index: 0;
+}
+
+#header-page{
+  height: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.coloured-text-wave{
+  background: -webkit-linear-gradient(var(--primary-dark), var(--accent-dark));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-left: 1rem;
+}
+
+.inline-text{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5rem;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+#date-header{
+  font-size: 48px;
+  margin-top: 0;
+  letter-spacing: 0.4ch;
+}
+
+#items-cont{
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#task-form{
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  justify-content: center;
+  align-items: center;
+  border: 2px white solid;
+  border-radius: 10px;
+  box-shadow: 0 0 2px white;
+  padding: 10px;
+}
+
+#task-form h1{
+  margin: 0.5rem 0 0.2rem 0;
+}
+
+#task-form button{
+  margin-top: 1rem;
+}
+
+#input-forms{
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.inline-items{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 80%;
+  margin: 1rem 0 1rem 0
+}
+
+.inline-items h3{
+  float: inline-start;
+  margin: 0;
+}
+
+.inline-items input{
+  float: inline-end;
+  margin: 0;
+  width:40%;
+}
+
+#pop-up-area{
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.error, .success{
+  width: 80%;
+  height: 2.5rem;
+  margin: 0 0 0.8rem 0 !important;
+  border-radius: 10px;
+}
+
+.error{
+  background-color: lightpink;
+  border: 2px solid lightpink;
+}
+
+.success {
+  background-color: lightgreen;
+  border: 2px solid lightgreen;
+}
+
+.flashed-message{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  font-size: 32px;
+  color: var(--text-dark);
+  text-shadow: 0 0 10px var(--background-dark);
+}
