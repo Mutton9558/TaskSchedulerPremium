@@ -4,9 +4,12 @@ import os
 import json
 from dotenv import load_dotenv
 from google.oauth2.credentials import Credentials
+from google.oauth2 import id_token
+from google.auth.transport import requests
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
-import datetime
+from datetime import timedelta, datetime
+import requests
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 # Load environment variables
@@ -15,20 +18,13 @@ load_dotenv('.env')
 # Initialize Flask
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey")  # Required for session management
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # Google API settings
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 CLIENT_SECRET_FILE = "client_secret.json"
 REDIRECT_URI = "http://localhost:5000/oauth/authorize"
-
-@app.route("/check_session")
-def create_session():
-    user = session.get("user")
-    if user:
-        return jsonify({"user": user, "status": "success"})
-    else:
-        return jsonify({"user": "None", "status": "error"}), 401
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 
 @app.route("/login_google")
 def login():
@@ -36,6 +32,24 @@ def login():
     auth_url, state = flow.authorization_url(prompt="consent")
     session["state"] = state
     return redirect(auth_url)
+
+@app.route("/auth/google", methods=["POST", "GET"])
+def google_login():
+    try:
+        data = request.json
+        token = data.get("token")
+        if not token:
+            return jsonify({"status": "error", "message": "Missing token"}), 400
+        response = requests.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={token}")
+        id_info = response.json()
+        if id_info["aud"] != GOOGLE_CLIENT_ID:
+            return jsonify({"status": "error", "message": "Token audience mismatch"}), 400
+        # Extract user info
+        username = id_info.get("name")
+        user_email = id_info.get("email")
+        return jsonify({"status": "success", "email": user_email, "username": username}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
 
 @app.route("/oauth/authorize")
 def oauth_callback():
@@ -79,7 +93,7 @@ def add_task():
 
     def format_google_calendar_time(date_str, time_str):
         # Convert date and time to Google Calendar's ISO 8601 format.
-        combined = datetime.datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+        combined = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
         return combined.isoformat()
 
     event = {
