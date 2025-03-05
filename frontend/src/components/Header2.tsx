@@ -15,6 +15,11 @@ function Header2() {
     navigate("/Activities");
   }
 
+  function logOut() {
+    localStorage.removeItem("User");
+    navigate("/login");
+  }
+
   return (
     <>
       <div id="nav-bar">
@@ -38,6 +43,9 @@ function Header2() {
               }`}
             >
               Activities
+            </button>
+            <button onClick={logOut} className="redirect-btn">
+              Log Out
             </button>
           </div>
         </div>

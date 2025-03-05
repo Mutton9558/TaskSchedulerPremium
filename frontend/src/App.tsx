@@ -1,18 +1,16 @@
 import "./App.css";
 import Header from "./components/Header";
 import Header2 from "./components/Header2";
-import CheckSession from "./components/CheckSession";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 function App() {
   const navigate = useNavigate();
-  const [sessionUser, setSessionUser] = useState<string | null>(null);
+  const sessionUser = localStorage.getItem("User");
 
   useEffect(() => {
-    <CheckSession onSessionCheck={setSessionUser} />;
-    if (sessionUser == null) {
+    if (!sessionUser) {
       navigate("/login");
     }
   }, []);
