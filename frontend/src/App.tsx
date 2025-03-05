@@ -1,9 +1,22 @@
 import "./App.css";
 import Header from "./components/Header";
+import Header2 from "./components/Header2";
+import CheckSession from "./components/CheckSession";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 function App() {
+  const navigate = useNavigate();
+  const [sessionUser, setSessionUser] = useState<string | null>(null);
+
+  useEffect(() => {
+    <CheckSession onSessionCheck={setSessionUser} />;
+    if (sessionUser == null) {
+      navigate("/login");
+    }
+  }, []);
+
   const [formData, setFormData] = useState({
     activityDate: "",
     activityName: "",
@@ -45,11 +58,12 @@ function App() {
   const handleLogin = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     localStorage.setItem("pendingActivity", JSON.stringify(formData));
-    window.location.href = "http://localhost:5000/login";
+    window.location.href = "http://localhost:5000/login_google";
   };
 
   return (
     <>
+      <Header2 />
       <Header />
       <div id="pop-up-area">
         <p id="pop-up-msg" className="flashed-message">
