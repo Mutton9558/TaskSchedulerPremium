@@ -22,7 +22,15 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 CLIENT_SECRET_FILE = "client_secret.json"
 REDIRECT_URI = "http://localhost:5000/oauth/authorize"
 
-@app.route("/login")
+@app.route("/check_session")
+def create_session():
+    user = session.get("user")
+    if user:
+        return jsonify({"user": user, "status": "success"})
+    else:
+        return jsonify({"user": "None", "status": "error"}), 401
+
+@app.route("/login_google")
 def login():
     flow = Flow.from_client_secrets_file(CLIENT_SECRET_FILE, scopes=SCOPES, redirect_uri=REDIRECT_URI)
     auth_url, state = flow.authorization_url(prompt="consent")
