@@ -230,6 +230,7 @@ table, th, td{
   align-items: center;
   text-align: center;
   width: 100%;
+  margin: 0 0 1rem 0;
 }
 
 #buffer-login::before,
@@ -244,3 +245,103 @@ table, th, td{
   padding: 0 10px;
   font-weight: bold;
 }
+
+#login-page{
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#login-cont{
+  border: 2px rgba(123, 133, 163, 0.3) solid;
+  width: 30rem;
+  height: 35rem;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  background-color: rgba(123, 133, 163, 0.3);
+}
+
+#login-top-sec{
+  height: 30%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#login-top-sec h1{
+  font-size: 48px;
+  margin: 0;
+}
+
+#login-top-sec p{
+  font-size: 16px;
+  letter-spacing: 0.2ch;
+}
+
+#login-inputs{
+  display: flex;
+  flex-direction: column;
+  /* height: 40%; */
+  justify-content: center;
+  align-items: center;
+}
+
+#login-inputs input{
+  height: 2rem;
+  width: 80%;
+  margin-bottom: 3rem;
+  padding-left: 1rem;
+}
+
+.std-input{
+  margin: 1rem 0rem 1rem 0rem;
+  border-radius: 8px;
+  height: 1.8rem;
+  cursor: pointer;
+  width: 20%;
+}
+
+#submit-btn{
+  height: 2rem;
+}
+
+.google-input{
+  width: 80%;
+}
+
+#login-bottom-sec{
+  height: 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#new-register{
+  height: 5%;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+#new-register p{
+  font-size: 14px;
+  margin: 0 0.2rem 0 0.6rem;
+}
+
+#new-register button{
+  border: none;
+  background-color: transparent;
+  color: var(--primary-dark);
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+  text-shadow: 0 0 1px white;
+}
+

@@ -1,8 +1,17 @@
 import "./App.css";
 import Header2 from "./components/Header2";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Activities() {
+  const navigate = useNavigate();
+  const sessionUser = localStorage.getItem("User");
+
+  useEffect(() => {
+    if (!sessionUser) {
+      navigate("/login");
+    }
+  }, []);
   const [displayType, setDisplayType] = useState("Weekly");
   const time: string[] = [];
   const days = [
