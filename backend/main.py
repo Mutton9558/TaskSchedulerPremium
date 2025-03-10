@@ -1,4 +1,5 @@
 from flask import Flask, redirect, request, jsonify, session
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
 import json
@@ -17,6 +18,8 @@ load_dotenv('.env')
 
 # Initialize Flask
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tsp.db'
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey")  # Required for session management
 CORS(app, supports_credentials=True)
 
@@ -25,6 +28,21 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 CLIENT_SECRET_FILE = "client_secret.json"
 REDIRECT_URI = "http://localhost:5000/oauth/authorize"
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+
+db = SQLAlchemy(app)
+
+class Users(db.Model):
+    id = db.Column("id", db.Integer, primary_key = True, nullable=False, unique=True)
+    username = db.Column("username", db.String(20), nullable=False, unique=True)
+    password = db.Column("password", db.String(16), nullable=False, unique=False)
+    email = db.Column("email", db.String(255), nullabe=False, unique=True)
+
+    def __init__(self, username, password, email):
+        self.id = id
+        self.username = username
+        self.password = password
+        self.email = email
+
 
 @app.route("/login_google")
 def login():
