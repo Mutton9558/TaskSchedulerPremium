@@ -9,6 +9,10 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
+from email.mime.text import MIMEText 
+from email.mime.image import MIMEImage 
+from email.mime.multipart import MIMEMultipart 
+import smtplib 
 from datetime import timedelta, datetime
 import requests
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
@@ -32,13 +36,12 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 db = SQLAlchemy(app)
 
 class Users(db.Model):
-    id = db.Column("id", db.Integer, primary_key = True, nullable=False, unique=True)
+    id = db.Column("id", db.Integer, primary_key = True, autoincrement=True, unique=True)
     username = db.Column("username", db.String(20), nullable=False, unique=True)
     password = db.Column("password", db.String(16), nullable=False, unique=False)
-    email = db.Column("email", db.String(255), nullabe=False, unique=True)
+    email = db.Column("email", db.String(255), nullable=False, unique=True)
 
     def __init__(self, username, password, email):
-        self.id = id
         self.username = username
         self.password = password
         self.email = email
@@ -124,5 +127,40 @@ def add_task():
 
     return jsonify({"message": "Event created", "eventId": event["id"]}), 200
 
+@app.route("/confirm_user", methods=["GET", "POST"])
+def confirm_user():
+    try:
+        data = request.json
+        user_username = data.get("userDataUsername")
+        user_password = data.get("userDataPassword")
+        user_email = data.get("userDataEmail")
+        if Users.query.filter_by(username=user_username).first():
+            return jsonify({"UsernameError": "Username Already In Use"})
+        elif Users.query.filter_by(email=user_email).first():
+            return jsonify({"EmailError": "Email Already In Use"})
+        else:
+            new_user = Users(username=user_username, password=user_password, email=user_email)
+            db.session.add(new_user)
+            db.session.commit()
+            return jsonify({"Success": "New Account Created Successfully"})
+    except Exception as e:
+        return jsonify({"Error": f"{e}"})
+    
+@app.route("/user_auth", methods=["GET", "POST"])
+def user_auth():
+    try:
+        data = request.json
+        username = data.get("username")
+        password = data.get("password")
+        found_user = Users.query.filter_by(username=username).first()
+        if found_user and found_user.password == password:
+            return jsonify({"Success": "Successfully Login"})
+        else:
+            return jsonify({"Error": "Username or Password incorrect!"})
+    except Exception as e:
+        return jsonify({"Error": e})
+
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(port=5000, debug=True)
