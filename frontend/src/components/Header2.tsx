@@ -22,7 +22,7 @@ function Header2() {
 
   return (
     <>
-      <div id="nav-bar">
+      <div className="nav-bar">
         <div id="nav-left">
           <p className="header-text">Task Scheduler Premium</p>
         </div>

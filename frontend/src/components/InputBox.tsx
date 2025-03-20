@@ -20,8 +20,11 @@ const InputBox: React.FC<inputProps> = ({
         type={type}
         placeholder={placeholder}
         name={name}
-        id={`${type === "submit" ? "submit-btn" : ""}`}
+        id={`${type === "submit" ? "submit-btn" : undefined}`}
         required={required}
+        maxLength={
+          name === "Username" ? 20 : name === "Password" ? 16 : undefined
+        }
       />
     </>
   );

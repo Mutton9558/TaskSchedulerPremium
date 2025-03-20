@@ -9,24 +9,23 @@ function App() {
   const navigate = useNavigate();
   const sessionUser = localStorage.getItem("User");
 
-  useEffect(() => {
-    if (!sessionUser) {
-      navigate("/login");
-    }
-  }, []);
-
   const [formData, setFormData] = useState({
     activityDate: "",
     activityName: "",
     activityStartTime: "00:00",
     activityEndTime: "23:59",
     userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    user: sessionUser,
   });
 
   const location = useLocation();
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    if (!sessionUser) {
+      navigate("/login");
+    }
+
     const messageBox = document.querySelector("#pop-up-msg");
     if (location.state?.message) {
       setMessage(location.state.message);
