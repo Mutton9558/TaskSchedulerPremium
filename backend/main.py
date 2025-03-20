@@ -36,16 +36,32 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 db = SQLAlchemy(app)
 
 class Users(db.Model):
+    __tablename__ = 'users'
     id = db.Column("id", db.Integer, primary_key = True, autoincrement=True, unique=True)
     username = db.Column("username", db.String(20), nullable=False, unique=True)
     password = db.Column("password", db.String(16), nullable=False, unique=False)
     email = db.Column("email", db.String(255), nullable=False, unique=True)
+    activities = db.relationship('Activities', backref = 'user', lazy=True)
 
     def __init__(self, username, password, email):
         self.username = username
         self.password = password
         self.email = email
 
+class Activities(db.Model):
+    activity_id = db.Column("activity_id", db.Integer, primary_key = True, autoincrement = True, unique=True)
+    activity_name = db.Column("activity_name", db.String(255), nullable=False, unique=False)
+    activity_date = db.Column("activity_date", db.String(40), nullable=False, unique=False)
+    activity_start_time = db.Column("activity_start_time", db.String(5), nullable=False, unique=False)
+    activity_end_time = db.Column("activity_end_time", db.String(5), nullable=False, unique=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def __init__(self, activity_name, activity_date, activity_start_time, activity_end_time, user_id):
+        self.activity_name = activity_name
+        self.activity_date = activity_date
+        self.activity_start_time = activity_start_time
+        self.activity_end_time = activity_end_time
+        self.user_id = user_id
 
 @app.route("/login_google")
 def login():
@@ -67,7 +83,13 @@ def google_login():
             return jsonify({"status": "error", "message": "Token audience mismatch"}), 400
         # Extract user info
         username = id_info.get("name")
+        user_token = id_info.get("sub")
         user_email = id_info.get("email")
+
+        if (not Users.query.filter_by(username=username).first()):
+            new_user = Users(username=username, password=user_token, email=user_email)
+            db.session.add(new_user)
+            db.session.commit()
         return jsonify({"status": "success", "email": user_email, "username": username}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
@@ -93,6 +115,8 @@ def add_task():
     activity_start_time = data.get('activityStartTime')
     activity_end_time = data.get('activityEndTime')
     user_timezone = data.get("userTimeZone")
+    user = data.get("user")
+    user_id = Users.query.filter_by(username=user).first().id
 
     if not (activity_date and activity_name):
         return jsonify({"message": "Missing fields"}), 400
@@ -102,8 +126,6 @@ def add_task():
     
     if not (activity_end_time):
         activity_end_time = "23:59"
-
-    print(f"start: {activity_start_time}, end: {activity_end_time}")
 
     # Load credentials
     if not os.path.exists("token.json"):
@@ -124,6 +146,10 @@ def add_task():
     }
 
     event = service.events().insert(calendarId="primary", body=event).execute()
+
+    new_activity = Activities(activity_name=activity_name, activity_date=activity_date, activity_start_time=activity_start_time, activity_end_time=activity_end_time, user_id=user_id)
+    db.session.add(new_activity)
+    db.session.commit()
 
     return jsonify({"message": "Event created", "eventId": event["id"]}), 200
 
@@ -157,6 +183,24 @@ def user_auth():
             return jsonify({"Success": "Successfully Login"})
         else:
             return jsonify({"Error": "Username or Password incorrect!"})
+    except Exception as e:
+        return jsonify({"Error": e})
+
+@app.route("/get_activities", methods=["GET", "POST"])
+def get_activities():
+    try:
+        data = request.json
+        username = data.get("username")
+        user_id = Users.query.filter_by(username=username).first().id
+        activityList = Activities.query.filter_by(user_id=user_id).all()
+        activities = {}
+        for a in activityList:
+            activities[a.activity_id] = {}
+            activities[a.activity_id]["name"] = a.activity_name
+            activities[a.activity_id]["date"] = a.activity_date
+            activities[a.activity_id]["start_time"] = a.activity_start_time
+            activities[a.activity_id]["end_time"] = a.activity_end_time
+        return jsonify(activities)
     except Exception as e:
         return jsonify({"Error": e})
 
