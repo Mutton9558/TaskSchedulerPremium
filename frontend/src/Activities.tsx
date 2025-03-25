@@ -41,7 +41,6 @@ const getActivityList = async () => {
 
   if (response.ok) {
     const data = await response.json();
-    console.log(data);
     return data;
   } else {
     console.log("Fail");
@@ -58,11 +57,33 @@ function Activities() {
       const fetchActivities = async () => {
         try {
           const activityList = await getActivityList(); // Wait for the async function
-          console.log(activityList);
           const keyList = Object.keys(activityList);
+          const table = document.getElementById("activity-list-table");
 
           for (let i = 0; i < keyList.length; i++) {
             const activity = activityList[keyList[i]];
+
+            const row = document.createElement("tr");
+            const idCell = document.createElement("td");
+            idCell.innerText = keyList[i];
+            const nameCell = document.createElement("td");
+            nameCell.innerText = activity.name;
+            const dateCell = document.createElement("td");
+            dateCell.innerText = activity.date;
+            const startTimeCell = document.createElement("td");
+            startTimeCell.innerText = activity.start_time;
+            const endTimeCell = document.createElement("td");
+            endTimeCell.innerText = activity.end_time;
+
+            row.appendChild(idCell);
+            row.appendChild(nameCell);
+            row.appendChild(dateCell);
+            row.appendChild(startTimeCell);
+            row.appendChild(endTimeCell);
+
+            // Append row to table
+            table?.appendChild(row);
+
             const activityDay = isDateinCurrentWeek(activity.date);
             console.log(activity.name);
             if (activityDay) {
@@ -167,6 +188,15 @@ function Activities() {
             }}
           >
             <h1>list</h1>
+            <table id="activity-list-table">
+              <tr>
+                <th>Activity ID</th>
+                <th>Activity Name</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+              </tr>
+            </table>
           </div>
         </div>
       </div>
