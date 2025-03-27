@@ -135,6 +135,7 @@ function Register() {
               onClick={() => {
                 navigate("/login");
               }}
+              id="reg-to-login"
             >
               Login
             </button>
